@@ -3,6 +3,7 @@ package com.eduardosdl.financecontrol.services;
 import com.eduardosdl.financecontrol.dtos.CreateTransactionDTO;
 import com.eduardosdl.financecontrol.dtos.ResponseTransactionDTO;
 import com.eduardosdl.financecontrol.exceptions.ValidationException;
+import com.eduardosdl.financecontrol.models.Account;
 import com.eduardosdl.financecontrol.models.Transaction;
 import com.eduardosdl.financecontrol.repositories.AccountRepository;
 import com.eduardosdl.financecontrol.repositories.TransactionRepository;
@@ -27,41 +28,39 @@ public class TransactionService {
         try {
             return repository.findAll();
         } catch (Exception e) {
-            // Tratar exceção e/ou registrar log
             throw new RuntimeException("Error fetching all transactions", e);
         }
     }
 
     public Transaction get(UUID transactionId) {
         try {
-            return repository.getReferenceById(transactionId);
+            return repository.findById(transactionId)
+                    .orElseThrow(() -> new ValidationException("Transaction não encontrado"));
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException("Transaction not found with ID: " + transactionId);
         } catch (Exception e) {
-            // Tratar exceção e/ou registrar log
             throw new RuntimeException("Error fetching transaction with ID: " + transactionId, e);
         }
     }
 
     public List<ResponseTransactionDTO> getByAccountId(UUID accountId) {
         try {
-            var transactions = repository.findByAccountId(accountId);
+            List<Transaction> transactions = repository.findByAccountId(accountId);
 
             return transactions.stream()
                     .map(ResponseTransactionDTO::new)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            // Tratar exceção e/ou registrar log
             throw new RuntimeException("Error fetching transactions for account ID: " + accountId, e);
         }
     }
 
     public ResponseTransactionDTO create(UUID accountId, CreateTransactionDTO transaction) {
         try {
-            var account = accountRepository.findById(accountId)
+            Account account = accountRepository.findById(accountId)
                     .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
 
-            var newTransaction = new Transaction();
+            Transaction newTransaction = new Transaction();
 
             newTransaction.setAmount(transaction.amount());
             newTransaction.setAccount(account);
@@ -73,7 +72,6 @@ public class TransactionService {
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Invalid operation type provided");
         } catch (Exception e) {
-            // Tratar exceção e/ou registrar log
             throw new RuntimeException("Error creating transaction", e);
         }
     }

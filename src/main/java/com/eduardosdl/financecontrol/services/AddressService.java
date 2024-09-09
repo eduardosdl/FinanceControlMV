@@ -20,25 +20,23 @@ public class AddressService {
 
     public void create(RequestAddressDTO addressData, UUID clientId) {
         try {
-            var client = clientRepository.getReferenceById(clientId);
-            var newAddress = new Address();
+            Client client = clientRepository.getReferenceById(clientId);
+            Address newAddress = new Address();
 
             mapToEntity(addressData, newAddress, client);
 
             repository.save(newAddress);
         } catch (DataAccessException e) {
-            // Handle database access exception
             throw new RuntimeException("Error accessing the database while creating the address", e);
         } catch (Exception e) {
-            // Handle other exceptions
             throw new RuntimeException("An unexpected error occurred while creating the address", e);
         }
     }
 
     public void update(RequestAddressDTO addressData, UUID clientId) {
         try {
-            var client = clientRepository.getReferenceById(clientId);
-            var updatedAddress = repository.getByClientId(clientId);
+            Client client = clientRepository.getReferenceById(clientId);
+            Address updatedAddress = repository.getByClientId(clientId);
 
             if (updatedAddress == null) {
                 throw new RuntimeException("Address not found for client ID: " + clientId);
@@ -48,14 +46,13 @@ public class AddressService {
 
             repository.save(updatedAddress);
         } catch (DataAccessException e) {
-            // Handle database access exception
             throw new RuntimeException("Error accessing the database while updating the address", e);
         } catch (Exception e) {
-            // Handle other exceptions
             throw new RuntimeException("An unexpected error occurred while updating the address", e);
         }
     }
 
+    // pega os atributos do DTO e atualiza a classe
     private void mapToEntity(RequestAddressDTO addressData, Address newAddress, Client client) {
         newAddress.setClient(client);
         newAddress.setAddressNumber(addressData.addressNumber());

@@ -24,13 +24,14 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, precision = 2)
+    @Column(nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OperationType operationType;
 
+    // conexão com tabela de conta
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;

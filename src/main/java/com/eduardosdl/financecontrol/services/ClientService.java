@@ -32,19 +32,18 @@ public class ClientService {
     }
 
     public Client getById(UUID clientId) {
-        try {
-            return repository.getReferenceById(clientId);
-        } catch (EntityNotFoundException e) {
-            throw new ValidationException("Cliente não encontrado com ID: " + clientId);
-        }
+            return repository.findById(clientId)
+                    .orElseThrow(() -> new ValidationException("Cliente não encontrado"));
     }
 
     public Client create(CreateClientDTO client) {
         try {
-            var newClient = new Client();
+            Client newClient = new Client();
 
+            // valida se existe cpf ou cnpj ja cadastrado
             validateDocumentUniqueness(client.clientType(), client.document());
 
+            // verifica o tipo do cliente se é PJ ou PF
             checkClientType(client.clientType(), client.document(), newClient);
 
             newClient.setClientType(client.clientType());
@@ -59,6 +58,7 @@ public class ClientService {
             );
 
             accountService.create(newClient.getId(), newAccount);
+            // cria a conta para atribuição ao usuário
             addressService.create(client.address(), newClient.getId());
 
             return newClient;
@@ -69,7 +69,7 @@ public class ClientService {
 
     public Client update(UUID clientId, UpdateClientDTO updatedData) {
         try {
-            var client = this.getById(clientId);
+            Client client = this.getById(clientId);
 
             validateDocumentUniqueness(client.getClientType(), updatedData.document());
             checkClientType(client.getClientType(), updatedData.document(), client);
@@ -80,23 +80,26 @@ public class ClientService {
 
             return repository.save(client);
         } catch (DataIntegrityViolationException e) {
-            throw new ValidationException("Erro ao atualizar cliente: " + e.getMessage());
+            throw new ValidationException("Erro ao atualizar cliente");
         }
     }
 
+    // apaga logicamente o cliente
     public void delete(UUID clientId) {
         try {
-            var client = getById(clientId);
+            Client client = getById(clientId);
 
+            // exclui logicamente todas as contas de um cliente
             accountService.deleteClientAccounts(clientId);
             client.setActive(false);
 
             repository.save(client);
         } catch (DataIntegrityViolationException e) {
-            throw new ValidationException("Erro ao deletar cliente: " + e.getMessage());
+            throw new ValidationException("Erro ao excluir cliente");
         }
     }
 
+    // verifica qual o tipo do cliente
     private void checkClientType(String type, String docNumber, Client newClient) {
         if (Objects.equals(type, "PJ")) {
             newClient.setCnpj(docNumber);
@@ -107,6 +110,7 @@ public class ClientService {
         }
     }
 
+    // faz a verificação de duplicidade de cpf ou cnpj
     private void validateDocumentUniqueness(String clientType, String document) {
         Client existingClient;
         if (Objects.equals(clientType, "PJ")) {

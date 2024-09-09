@@ -29,6 +29,7 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal initialBalance;
 
+    // conexão com tabela de cliente
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;

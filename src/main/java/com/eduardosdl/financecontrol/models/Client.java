@@ -1,12 +1,11 @@
 package com.eduardosdl.financecontrol.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Table(name = "client")
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,6 +36,7 @@ public class Client {
     private LocalDateTime createdAt;
     private Boolean active;
 
+    // insere a data de criação e define o usuário como ativo
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

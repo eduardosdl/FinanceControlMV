@@ -1,7 +1,9 @@
 package com.eduardosdl.financecontrol.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -32,7 +34,8 @@ public class Address {
     @Column(nullable = false)
     private String zipCode;
 
-    @OneToOne(optional = false ,cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // relacionamento com tabela de cliente
+    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;
 }

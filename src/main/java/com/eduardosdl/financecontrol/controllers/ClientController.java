@@ -21,7 +21,6 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-
     @GetMapping
     private ResponseEntity<List<Client>> getAll() {
         return ResponseEntity.ok(clientService.getAll());
