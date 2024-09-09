@@ -9,6 +9,7 @@ Este projeto é uma API backend para o gerenciamento de contas, transações e c
 - Spring Data JPA
 - Hibernate
 - Oracle Database
+- Swagger
 
 ## Instalação
 
@@ -30,6 +31,12 @@ Este projeto é uma API backend para o gerenciamento de contas, transações e c
 - **Execute o projeto**
 
 ## Principais Endpoints
+
+> [!TIP]
+O `financeControlMvEndpoints.json` que se encontra na raiz do projeto, contém todas as URLs exportadas do insomnia, para você importar para o client http que você desejar
+
+### Documentação
+- Acesse `/doc` em seu navegador para ter acesso a documentação dos endpoits gerados pelo insomnia
 
 ### Cliente
 
